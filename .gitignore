@@ -15,3 +15,5 @@
 # vendor/
 .air.toml
 tmp/
+
+item.sql

@@ -1,6 +1,6 @@
 FROM golang:1.16.9-alpine3.14
 
-ENV GOPATH=/go GO111MODULE=on
+ENV GOPATH=/go GO111MODULE=on CGO_ENABLED=1
 
 RUN apk update && \
     apk --no-cache add git
