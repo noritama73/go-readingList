@@ -1,4 +1,4 @@
-package handler
+package model
 
 type ItemRepository interface {
 	// ListItems() (result ItemList, e error)

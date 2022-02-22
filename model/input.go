@@ -1,4 +1,4 @@
-package handler
+package model
 
 type GetItem struct {
 	ID ID `form:"id"`
@@ -11,4 +11,11 @@ type PutItemData struct {
 type UpdateItemData struct {
 	ID   ID     `form:"id"`
 	Data string `form:"data"`
+}
+
+type PutDetailData struct {
+	Title string `json:"title"`
+	Memo  string `json:"memo"`
+	URL   string `json:"url"`
+	Tag   string `json:"tag"`
 }

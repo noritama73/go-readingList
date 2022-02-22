@@ -4,10 +4,11 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/noritama73/go-readinglist/model"
 )
 
 type ItemHandler struct {
-	itemRepository ItemRepository
+	itemRepository model.ItemRepository
 }
 
 func NewItemHandler(sqlService *SQLService) *ItemHandler {
@@ -21,7 +22,7 @@ func (h *ItemHandler) ListItems(c echo.Context) error {
 }
 
 func (h *ItemHandler) GetItem(c echo.Context) error {
-	var param GetItem
+	var param model.GetItem
 
 	if e := c.Bind(&param); e != nil {
 		return e
@@ -36,7 +37,7 @@ func (h *ItemHandler) GetItem(c echo.Context) error {
 }
 
 func (h *ItemHandler) PutItemData(c echo.Context) error {
-	var param PutItemData
+	var param model.PutItemData
 
 	if e := c.Bind(&param); e != nil {
 		return e

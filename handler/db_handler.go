@@ -3,8 +3,10 @@ package handler
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/noritama73/go-readinglist/model"
 )
 
 type SQLService struct {
@@ -12,13 +14,17 @@ type SQLService struct {
 }
 
 func NewSQLService() *SQLService {
-	db, _ := sql.Open("sqlite3", "../app/item.sql")
+	db, e := sql.Open("sqlite3", "../app/item.sqlite3")
+	if e != nil {
+		log.SetFlags(log.Lshortfile)
+		log.Println(e)
+	}
 	return &SQLService{
 		db: db,
 	}
 }
 
-func (s *SQLService) ListItems() (result ItemList, e error) {
+func (s *SQLService) ListItems() (result model.ItemList, e error) {
 	db := s.db
 	defer db.Close()
 
@@ -39,7 +45,7 @@ func (s *SQLService) ListItems() (result ItemList, e error) {
 	return
 }
 
-func (s *SQLService) GetItem(id ID) (result Item, e error) {
+func (s *SQLService) GetItem(id model.ID) (result model.Item, e error) {
 	db := s.db
 	defer db.Close()
 
@@ -56,13 +62,13 @@ func (s *SQLService) GetItem(id ID) (result Item, e error) {
 			return
 		}
 	}
-	det := ItemDetail{
+	det := model.ItemDetail{
 		Title: title,
 		Memo:  memo,
 		URL:   url,
 		Tag:   tag,
 	}
-	result = Item{
+	result = model.Item{
 		ID:     id,
 		Detail: det,
 	}
@@ -74,38 +80,68 @@ func (s *SQLService) PutItemData(data []byte) error {
 	db := s.db
 	defer db.Close()
 
+	log.SetFlags(log.Lshortfile)
+
 	create_sql, e := db.Prepare(`CREATE TABLE IF NOT EXISTS item (
-		id int AUTO_INCREMENT NOT NULL,
-		title text NOT NULL,
-		created_at datetime default current_timestamp,
-		updated_at timestamp default current_timestamp pn update current_timestamp,
-		url text,
-		memo text,
-		tag text,
+		id INTEGER AUTO_INCREMENT NOT NULL,
+		title TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
+		updated_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
+		url TEXT,
+		memo TEXT,
+		tag TEXT,
 		PRIMARY KEY (id)
 	)`)
 	if e != nil {
+		log.Println(e)
 		return e
 	}
 	defer create_sql.Close()
 	create_sql.Exec()
 
-	var DetailData ItemDetail
+	var DetailData model.PutDetailData
 	if e := json.Unmarshal(data, &DetailData); e != nil {
+		if err, ok := e.(*json.SyntaxError); ok {
+			log.Println(string(data[err.Offset-7:err.Offset+7]))
+			log.Println(e)
+		}
 		return e
 	}
 
 	insert_sql, e := db.Prepare(`INSERT INTO item (
 		title, url, memo, tag
 	)
-	VALUE (
+	VALUES (
 		$1, $2, $3, $4
 	)`)
 	if e != nil {
+		log.Println(e)
 		return e
 	}
 	defer insert_sql.Close()
 	insert_sql.Exec(DetailData.Title, DetailData.URL, DetailData.Memo, DetailData.Tag)
 
 	return nil
+}
+
+type FakeSQLService struct {
+	*SQLService
+}
+
+func NewFakeSQLService() *FakeSQLService {
+	return &FakeSQLService{
+		SQLService: NewSQLService(),
+	}
+}
+
+func (s *FakeSQLService) DeleteAll() {
+	db := s.db
+	defer db.Close()
+	drop_sql, e := db.Prepare("DROP TABLE item")
+	if e != nil {
+		log.Println(e)
+		return
+	}
+	defer drop_sql.Close()
+	drop_sql.Exec()
 }
