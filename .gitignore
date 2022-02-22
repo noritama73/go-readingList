@@ -16,4 +16,4 @@
 .air.toml
 tmp/
 
-item.sqlite3
+item.db

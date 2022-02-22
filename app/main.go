@@ -19,4 +19,5 @@ func main() {
 	e.POST("/item", dbhandler.PutItemData)
 
 	e.Logger.Fatal(e.Start(":8080"))
+	defer sqldb.DestructDB()
 }

@@ -14,19 +14,37 @@ type SQLService struct {
 }
 
 func NewSQLService() *SQLService {
-	db, e := sql.Open("sqlite3", "../app/item.sqlite3")
+	db, e := sql.Open("sqlite3", "../app/item.db")
 	if e != nil {
 		log.SetFlags(log.Lshortfile)
-		log.Println(e)
+		log.Fatalln(e)
 	}
+	create_sql, e := db.Prepare(`CREATE TABLE IF NOT EXISTS item (
+		id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+		title TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
+		updated_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
+		url TEXT,
+		memo TEXT,
+		tag TEXT
+	)`)
+	if e != nil {
+		log.Fatalln(e)
+	}
+	defer create_sql.Close()
+	create_sql.Exec()
+
 	return &SQLService{
 		db: db,
 	}
 }
 
+func (s *SQLService) DestructDB() {
+	s.db.Close()
+}
+
 func (s *SQLService) ListItems() (result model.ItemList, e error) {
 	db := s.db
-	defer db.Close()
 
 	rows, e := db.Query("SELECT * FROM item")
 	if e != nil {
@@ -45,66 +63,45 @@ func (s *SQLService) ListItems() (result model.ItemList, e error) {
 	return
 }
 
+func (s *SQLService) GetID() (id model.ID, err error) { // テスト用
+	db := s.db
+
+	row := db.QueryRow("SELECT * FROM item LIMIT 1")
+
+	log.Println(row)
+
+	return
+}
+
 func (s *SQLService) GetItem(id model.ID) (result model.Item, e error) {
 	db := s.db
-	defer db.Close()
-
-	get_sql, e := db.Query(`SELECT * FROM item WHERE id = $1`, id)
+	log.Println(id)
+	
+	det := result.Detail
+	get_sql := db.QueryRow(`SELECT title, memo, url, tag FROM item WHERE id = $1`, id)
+	e = get_sql.Scan(&det.Title, &det.Memo, &det.URL, &det.Tag)
 	if e != nil {
+		log.Println(e)
 		return
 	}
-	defer get_sql.Close()
+	
+	result.ID = id
+	result.Detail = det
 
-	var title, memo, url, tag string
-	for get_sql.Next() {
-		err := get_sql.Scan(&title, &memo, &url, &tag)
-		if err != nil {
-			return
-		}
-	}
-	det := model.ItemDetail{
-		Title: title,
-		Memo:  memo,
-		URL:   url,
-		Tag:   tag,
-	}
-	result = model.Item{
-		ID:     id,
-		Detail: det,
-	}
+	log.Println(result)
 
 	return
 }
 
 func (s *SQLService) PutItemData(data []byte) error {
 	db := s.db
-	defer db.Close()
-
-	log.SetFlags(log.Lshortfile)
-
-	create_sql, e := db.Prepare(`CREATE TABLE IF NOT EXISTS item (
-		id INTEGER AUTO_INCREMENT NOT NULL,
-		title TEXT NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
-		updated_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
-		url TEXT,
-		memo TEXT,
-		tag TEXT,
-		PRIMARY KEY (id)
-	)`)
-	if e != nil {
-		log.Println(e)
-		return e
-	}
-	defer create_sql.Close()
-	create_sql.Exec()
 
 	var DetailData model.PutDetailData
 	if e := json.Unmarshal(data, &DetailData); e != nil {
 		if err, ok := e.(*json.SyntaxError); ok {
-			log.Println(string(data[err.Offset-7:err.Offset+7]))
-			log.Println(e)
+			log.Println(string(data[err.Offset-7 : err.Offset+7]))
 		}
+		log.Println(e)
 		return e
 	}
 
@@ -120,7 +117,16 @@ func (s *SQLService) PutItemData(data []byte) error {
 	}
 	defer insert_sql.Close()
 	insert_sql.Exec(DetailData.Title, DetailData.URL, DetailData.Memo, DetailData.Tag)
-
+	
+	var det model.ItemDetail
+	get_sql := db.QueryRow(`SELECT title, memo, url, tag FROM item LIMIT 1`)
+	e = get_sql.Scan(&det.Title, &det.Memo, &det.URL, &det.Tag)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+	log.Println(det)
+	
 	return nil
 }
 
