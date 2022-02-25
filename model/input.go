@@ -13,6 +13,10 @@ type UpdateItemData struct {
 	Data string `form:"data"`
 }
 
+type DeleteItem struct {
+	ID ID `form:"id"`
+}
+
 type PutDetailData struct {
 	Title string `json:"title"`
 	Memo  string `json:"memo"`

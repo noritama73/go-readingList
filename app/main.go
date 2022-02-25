@@ -16,7 +16,10 @@ func main() {
 	sqldb := handler.NewSQLService()
 	dbhandler := handler.NewItemHandler(sqldb)
 	e.GET("/itemList", dbhandler.ListItems)
+	e.GET("/item", dbhandler.GetItem)
 	e.POST("/item", dbhandler.PutItemData)
+	e.PUT("/item", dbhandler.UpdateItemData)
+	e.DELETE("/item", dbhandler.DeleteItemData)
 
 	e.Logger.Fatal(e.Start(":8080"))
 	defer sqldb.DestructDB()

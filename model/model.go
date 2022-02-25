@@ -1,14 +1,14 @@
 package model
 
 type ItemRepository interface {
-	// ListItems() (result ItemList, e error)
 	GetItem(id ID) (result Item, e error)
+	ListItems() (result ItemList, e error)
 	PutItemData(data []byte) error
-	// UpdateItemData(id ID, data []byte) error
-	// DeleteItemData(id ID) error
+	UpdateItemData(id ID, data []byte) error
+	DeleteItemData(id ID) error
 }
 
-type ID string
+type ID int64
 
 type Item struct {
 	ID     ID
@@ -27,6 +27,7 @@ type ItemThumbnail struct {
 	ID         ID
 	Title      string
 	Updated_at string
+	Tag        string
 }
 
 type ItemList []ItemThumbnail

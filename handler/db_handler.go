@@ -43,53 +43,42 @@ func (s *SQLService) DestructDB() {
 	s.db.Close()
 }
 
-func (s *SQLService) ListItems() (result model.ItemList, e error) {
-	db := s.db
-
-	rows, e := db.Query("SELECT * FROM item")
-	if e != nil {
-		return
-	}
-	defer rows.Close()
-	var id, title string
-
-	for rows.Next() {
-		err := rows.Scan(&id, &title)
-		if err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func (s *SQLService) GetID() (id model.ID, err error) { // テスト用
-	db := s.db
-
-	row := db.QueryRow("SELECT * FROM item LIMIT 1")
-
-	log.Println(row)
-
-	return
-}
-
 func (s *SQLService) GetItem(id model.ID) (result model.Item, e error) {
 	db := s.db
-	log.Println(id)
-	
+
 	det := result.Detail
-	get_sql := db.QueryRow(`SELECT title, memo, url, tag FROM item WHERE id = $1`, id)
-	e = get_sql.Scan(&det.Title, &det.Memo, &det.URL, &det.Tag)
+	get_sql := db.QueryRow(`SELECT title, updated_at, memo, url, tag FROM item WHERE id = $1`, id)
+	e = get_sql.Scan(&det.Title, &det.Updated_at, &det.Memo, &det.URL, &det.Tag)
 	if e != nil {
 		log.Println(e)
 		return
 	}
-	
+
 	result.ID = id
 	result.Detail = det
 
-	log.Println(result)
+	return
+}
 
+func (s *SQLService) ListItems() (result model.ItemList, e error) {
+	db := s.db
+
+	rows, e := db.Query("SELECT id, title, updated_at, tag FROM item")
+	if e != nil {
+		return
+	}
+	defer rows.Close()
+	var item model.ItemThumbnail
+
+	for rows.Next() {
+		err := rows.Scan(&item.ID, &item.Title, &item.Updated_at, &item.Tag)
+		if err != nil {
+			return nil, err
+		}
+		log.Println(item)
+		result = append(result, item)
+	}
+	log.Println(result)
 	return
 }
 
@@ -117,16 +106,50 @@ func (s *SQLService) PutItemData(data []byte) error {
 	}
 	defer insert_sql.Close()
 	insert_sql.Exec(DetailData.Title, DetailData.URL, DetailData.Memo, DetailData.Tag)
-	
-	var det model.ItemDetail
-	get_sql := db.QueryRow(`SELECT title, memo, url, tag FROM item LIMIT 1`)
-	e = get_sql.Scan(&det.Title, &det.Memo, &det.URL, &det.Tag)
+
+	return nil
+}
+
+func (s *SQLService) UpdateItemData(id model.ID, data []byte) error {
+	db := s.db
+
+	var DetailData model.PutDetailData
+	if e := json.Unmarshal(data, &DetailData); e != nil {
+		if err, ok := e.(*json.SyntaxError); ok {
+			log.Println(string(data[err.Offset-7 : err.Offset+7]))
+		}
+		log.Println(e)
+		return e
+	}
+
+	update_sql, e := db.Prepare(`UPDATE item SET
+		title = $1,
+		url = $2,
+		memo = $3,
+		tag = $4
+		WHERE id = $5
+	`)
 	if e != nil {
 		log.Println(e)
 		return e
 	}
-	log.Println(det)
-	
+	defer update_sql.Close()
+	update_sql.Exec(DetailData.Title, DetailData.URL, DetailData.Memo, DetailData.Tag, id)
+
+	return nil
+}
+
+func (s *SQLService) DeleteItemData(id model.ID) error {
+	db := s.db
+
+	delete_sql, e := db.Prepare(`DELETE FROM item WHERE id = $1`)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+	defer delete_sql.Close()
+	delete_sql.Exec()
+
 	return nil
 }
 
