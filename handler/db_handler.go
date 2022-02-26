@@ -75,10 +75,8 @@ func (s *SQLService) ListItems() (result model.ItemList, e error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Println(item)
 		result = append(result, item)
 	}
-	log.Println(result)
 	return
 }
 
@@ -112,6 +110,14 @@ func (s *SQLService) PutItemData(data []byte) error {
 
 func (s *SQLService) UpdateItemData(id model.ID, data []byte) error {
 	db := s.db
+
+	var idCheck model.ID
+	exist_sql := db.QueryRow(`SELECT id FROM item WHERE id = $1`, id)
+	e := exist_sql.Scan(&idCheck)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
 
 	var DetailData model.PutDetailData
 	if e := json.Unmarshal(data, &DetailData); e != nil {
@@ -148,7 +154,7 @@ func (s *SQLService) DeleteItemData(id model.ID) error {
 		return e
 	}
 	defer delete_sql.Close()
-	delete_sql.Exec()
+	delete_sql.Exec(id)
 
 	return nil
 }
@@ -165,7 +171,6 @@ func NewFakeSQLService() *FakeSQLService {
 
 func (s *FakeSQLService) DeleteAll() {
 	db := s.db
-	defer db.Close()
 	drop_sql, e := db.Prepare("DROP TABLE item")
 	if e != nil {
 		log.Println(e)
@@ -173,4 +178,19 @@ func (s *FakeSQLService) DeleteAll() {
 	}
 	defer drop_sql.Close()
 	drop_sql.Exec()
+
+	create_sql, e := db.Prepare(`CREATE TABLE IF NOT EXISTS item (
+		id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+		title TEXT NOT NULL,
+		created_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
+		updated_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
+		url TEXT,
+		memo TEXT,
+		tag TEXT
+	)`)
+	if e != nil {
+		log.Fatalln(e)
+	}
+	defer create_sql.Close()
+	create_sql.Exec()
 }

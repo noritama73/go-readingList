@@ -29,7 +29,7 @@ func (h *ItemHandler) GetItem(c echo.Context) error {
 		return e
 	}
 
-	return c.JSON(http.StatusOK, item)
+	return apiResponseOK(c, item)
 }
 
 func (h *ItemHandler) ListItems(c echo.Context) error {
@@ -79,8 +79,4 @@ func (h *ItemHandler) DeleteItemData(c echo.Context) error {
 	}
 
 	return c.String(http.StatusOK, "Successfully delete data!")
-}
-
-func apiResponseOK(c echo.Context, data interface{}) error {
-	return c.JSONPretty(http.StatusOK, data, " ")
 }
