@@ -18,15 +18,15 @@ import (
 )
 
 var (
-	testEcho    = echo.New()
-	testTitle   = "test title"
-	testMemo    = "test memo"
-	testURL     = "http://xxx.test"
-	testTag     = "test tag"
-	updateTitle = "update title"
-	updateMemo  = "update memo"
-	updateURL   = "http://xxx.update"
-	updateTag   = "update tag"
+	testEcho       = echo.New()
+	testTitle      = "test title"
+	testMemo       = "test memo"
+	testURL        = "http://xxx.test"
+	testTag        = "test tag"
+	updateTitle    = "update title"
+	updateMemo     = "update memo"
+	updateURL      = "http://xxx.update"
+	updateTag      = "update tag"
 	ErrSQLNoResult = errors.New("sql: no rows in result set")
 )
 
