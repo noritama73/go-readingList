@@ -2,13 +2,25 @@ package main
 
 import (
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/noritama73/go-readinglist/handler"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/noritama73/go-readinglist/internal/handler"
 )
 
 func main() {
 	e := echo.New()
+
+	aos := []string{"*"}
+	if os.Getenv("ALLOW_ORIGINS") != "" {
+		aos = strings.Split(os.Getenv("ALLOW_ORIGINS"), ",")
+	}
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: aos,
+	}))
+
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})

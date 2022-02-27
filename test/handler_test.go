@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v4"
-	"github.com/noritama73/go-readinglist/handler"
-	"github.com/noritama73/go-readinglist/model"
+	"github.com/noritama73/go-readinglist/internal/handler"
+	"github.com/noritama73/go-readinglist/internal/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

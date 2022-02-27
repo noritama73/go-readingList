@@ -4,9 +4,7 @@ services:
       build: .
       tty: true
       ports:
-        - "8080:8080"
-      volumes:
-        - ./:/go/app
+        - "8088:8080"
     vue:
       build: 
         context: .

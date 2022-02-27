@@ -6,7 +6,7 @@ import (
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/noritama73/go-readinglist/model"
+	"github.com/noritama73/go-readinglist/internal/model"
 )
 
 type SQLService struct {
@@ -14,7 +14,7 @@ type SQLService struct {
 }
 
 func NewSQLService() *SQLService {
-	db, e := sql.Open("sqlite3", "../app/item.db")
+	db, e := sql.Open("sqlite3", "./item.db")
 	if e != nil {
 		log.SetFlags(log.Lshortfile)
 		log.Fatalln(e)

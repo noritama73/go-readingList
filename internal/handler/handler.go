@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/noritama73/go-readinglist/model"
+	"github.com/noritama73/go-readinglist/internal/model"
 )
 
 type ItemHandler struct {

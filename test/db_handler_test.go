@@ -4,8 +4,8 @@ import (
 	"log"
 	"testing"
 
-	"github.com/noritama73/go-readinglist/handler"
-	"github.com/noritama73/go-readinglist/model"
+	"github.com/noritama73/go-readinglist/internal/handler"
+	"github.com/noritama73/go-readinglist/internal/model"
 	"github.com/stretchr/testify/assert"
 )
 
