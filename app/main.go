@@ -22,16 +22,16 @@ func main() {
 	}))
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
+		return c.JSON(http.StatusOK, "Hello, World!")
 	})
 
 	sqldb := handler.NewSQLService()
-	dbhandler := handler.NewItemHandler(sqldb)
-	e.GET("/itemList", dbhandler.ListItems)
-	e.GET("/item", dbhandler.GetItem)
-	e.POST("/item", dbhandler.PutItemData)
-	e.PUT("/item", dbhandler.UpdateItemData)
-	e.DELETE("/item", dbhandler.DeleteItemData)
+	cxthandler := handler.NewItemHandler(sqldb)
+	e.GET("/itemList", cxthandler.ListItems)
+	e.GET("/item", cxthandler.GetItem)
+	e.POST("/item", cxthandler.PutItemData)
+	e.PUT("/item", cxthandler.UpdateItemData)
+	e.DELETE("/item", cxthandler.DeleteItemData)
 
 	e.Logger.Fatal(e.Start(":8080"))
 	defer sqldb.DestructDB()

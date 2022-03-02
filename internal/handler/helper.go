@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -20,13 +21,6 @@ func apiResponseOK(c echo.Context, data interface{}) error {
 	return c.JSONPretty(http.StatusOK, data, " ")
 }
 
-func apiResponseErr(c echo.Context, data interface{}, mode string) error {
-	switch mode {
-	case "server":
-		return c.String(http.StatusInternalServerError, serverErrMsg)
-	case "client":
-		return c.String(http.StatusBadRequest, clientErrMsg)
-	default:
-		return c.String(http.StatusBadGateway, serverErrMsg)
-	}
+func apiResponseErr(c echo.Context, status int, message string) error {
+	return c.JSON(status, apiErrorResponse{Code: fmt.Sprintf("%d", status), Errors: []string{message}})
 }

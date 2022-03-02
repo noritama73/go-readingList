@@ -10,7 +10,7 @@ start:
 	@docker-compose up --build -d
 
 compose/up:
-	@docker-compose up
+	@docker-compose up -d
 
 exec:
 	@docker exec -it go-readinglist-go-1 /bin/sh
@@ -18,9 +18,12 @@ exec:
 test:
 	@go test ./...
 
-git:
+push:
 	@go fmt ./...
-	@cd frontend && yarn lint
+	@cd frontend && yarn lint --fix
 	@git add .
 	@git commit -m ${MSG}
 	@git push origin master
+
+serve:
+	@cd frontend && yarn lint --fix && yarn serve

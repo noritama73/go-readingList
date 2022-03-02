@@ -8,6 +8,6 @@ RUN apk update && \
 COPY . $APPDIR/
 WORKDIR $APPDIR
 
-RUN go build -mod=vendor -o gorl app/main.go
+RUN go build -mod=vendor -o app app/main.go
 
-ENTRYPOINT ["gorl/main"]
+ENTRYPOINT ["app/main"]
