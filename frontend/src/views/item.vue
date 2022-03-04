@@ -1,12 +1,12 @@
 <template>
   <v-card>
     <v-row>
-      <v-col cols="2">
+      <v-col cols="3">
         <v-card-title>レコード作成</v-card-title>
       </v-col>
       <v-col class="d-flex align-center">
         <v-btn>
-          <v-icon>mdi-database-arrow-left-outline</v-icon>
+          <v-icon @click="postItem()">mdi-database-arrow-left-outline</v-icon>
         </v-btn>
       </v-col>
     </v-row>
@@ -22,16 +22,18 @@ export default {
     Form,
   },
   methods: {
-    postItem(data) {
+    postItem() {
       let param = new URLSearchParams();
+      let data = this.$refs.child.childPostItem();
       param.append("data", JSON.stringify(data));
+      console.log(JSON.stringify(data));
       axios
         .post(process.env.VUE_APP_ENDPOINT + "/item", param)
         .then((res) => {
-          console.log(res);
+          console.log(res.data);
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.response);
         });
     },
   },

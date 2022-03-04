@@ -1,21 +1,26 @@
 <template>
   <div>
     <v-card>
-      <v-card-title>タイトル</v-card-title>
       <v-card-text>
         <v-row>
           <v-col>
-            <v-text-field></v-text-field>
+            <v-text-field
+              v-model="submits.title"
+              label="タイトル"
+            ></v-text-field>
           </v-col>
         </v-row>
       </v-card-text>
     </v-card>
     <v-card>
-      <v-card-title>メモ</v-card-title>
       <v-card-text>
         <v-row>
           <v-col>
-            <v-textarea auto-grow></v-textarea>
+            <v-textarea
+              v-model="submits.memo"
+              label="メモ"
+              auto-grow
+            ></v-textarea>
           </v-col>
         </v-row>
       </v-card-text>
@@ -23,12 +28,10 @@
     <v-card>
       <v-row justify="center">
         <v-col cols="9" class="mb-2">
-          <v-card-title>関連リンク</v-card-title>
-          <v-text-field></v-text-field>
+          <v-text-field v-model="submits.url" label="関連リンク"></v-text-field>
         </v-col>
         <v-col cols="2" class="mb-2">
-          <v-card-title>タグ</v-card-title>
-          <v-select :items="tags"></v-select>
+          <v-select :items="tags" v-model="submits.tag" label="タグ"></v-select>
         </v-col>
       </v-row>
     </v-card>
@@ -63,10 +66,10 @@ export default {
       const submitData = {
         title: this.submits.title,
         memo: this.submits.memo,
-        url: this.sibmit.url,
+        url: this.submits.url,
         tag: this.submits.tag,
       };
-      this.$emit("postItem", submitData);
+      return submitData;
     },
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :header="itemHeaders" :items="items"> </v-data-table>
+  <v-data-table :headers="itemHeaders" :items="items"> </v-data-table>
 </template>
 
 <script>
@@ -9,10 +9,10 @@ export default {
     return {
       items: [],
       itemHeaders: [
-        { text: "ID", value: "id" },
-        { text: "タイトル", value: "title" },
-        { text: "更新日時", value: "updated_at" },
-        { text: "タグ", value: "tag" },
+        { text: "ID", value: "ID" },
+        { text: "タイトル", value: "Title" },
+        { text: "更新日時", value: "Updated_at" },
+        { text: "タグ", value: "Tag" },
       ],
     };
   },

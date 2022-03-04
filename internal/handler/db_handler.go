@@ -14,9 +14,9 @@ type SQLService struct {
 }
 
 func NewSQLService() *SQLService {
-	db, e := sql.Open("sqlite3", "./item.db")
+	log.SetFlags(log.Lshortfile)
+	db, e := sql.Open("sqlite3", "./sql/item.db")
 	if e != nil {
-		log.SetFlags(log.Lshortfile)
 		log.Fatalln(e)
 	}
 	create_sql, e := db.Prepare(`CREATE TABLE IF NOT EXISTS item (
@@ -86,7 +86,7 @@ func (s *SQLService) PutItemData(data []byte) error {
 	var DetailData model.PutDetailData
 	if e := json.Unmarshal(data, &DetailData); e != nil {
 		if err, ok := e.(*json.SyntaxError); ok {
-			log.Println(string(data[err.Offset-7 : err.Offset+7]))
+			log.Println(string(data[err.Offset-1 : err.Offset+1]))
 		}
 		log.Println(e)
 		return e

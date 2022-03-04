@@ -12,6 +12,9 @@ start:
 compose/up:
 	@docker-compose up -d
 
+compose/down:
+	@docker-compose down
+
 exec:
 	@docker exec -it go-readinglist-go-1 /bin/sh
 
