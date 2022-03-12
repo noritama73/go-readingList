@@ -33,6 +33,6 @@ func main() {
 	e.PUT("/item", cxthandler.UpdateItemData)
 	e.DELETE("/item", cxthandler.DeleteItemData)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
 	defer sqldb.DestructDB()
 }

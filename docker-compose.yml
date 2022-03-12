@@ -3,12 +3,13 @@ services:
     go:
       build: .
       tty: true
+      env_file: ./.env
+      environment:
+        - PORT
+        - DRIVER
+        - DSN
       ports:
-        - "8088:8080"
-      volumes:
-        - type: bind
-          source: "./sql/item.db"
-          target: /var/lib/sql/item.db
+        - ${PORT}:${PORT}
     vue:
       build: 
         context: .
@@ -16,3 +17,20 @@ services:
       tty: true
       ports:
         - "8089:80"
+    db:
+      image: mariadb
+      container_name: db
+      environment:
+        - MYSQL_ROOT_PASSWORD
+        - MYSQL_DATABASE
+        - TZ
+      command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      volumes:
+        - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+        - gorl-db:/var/lib/mysql/gorl
+      ports:
+        - 3306:3306
+
+volumes:
+  gorl-db:
+    driver: local

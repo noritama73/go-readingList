@@ -7,6 +7,7 @@ import (
 	"github.com/noritama73/go-readinglist/internal/handler"
 	"github.com/noritama73/go-readinglist/internal/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_Account(t *testing.T) {
@@ -45,7 +46,7 @@ func Test_Account(t *testing.T) {
 
 	itemList, e := fakeDB.ListItems()
 	assert.NoError(t, e)
-	assert.Len(t, itemList, 1)
+	require.Len(t, itemList, 1)
 	assert.Equal(t, model.ID(1), itemList[0].ID)
 	assert.Equal(t, "update title", itemList[0].Title)
 	assert.Equal(t, "update tag", itemList[0].Tag)

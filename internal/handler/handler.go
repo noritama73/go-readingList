@@ -63,8 +63,7 @@ func (h *ItemHandler) UpdateItemData(c echo.Context) error {
 	if e := h.itemRepository.UpdateItemData(param.ID, []byte(param.Data)); e != nil {
 		return apiResponseErr(c, http.StatusInternalServerError, serverErrMsg)
 	}
-
-	return apiResponseOK(c, "Successfully updata data!")
+	return apiResponseOK(c, "Successfully update3 data!")
 }
 
 func (h *ItemHandler) DeleteItemData(c echo.Context) error {

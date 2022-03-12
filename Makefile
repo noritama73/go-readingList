@@ -18,8 +18,9 @@ compose/down:
 exec:
 	@docker exec -it go-readinglist-go-1 /bin/sh
 
-test:
-	@go test ./...
+test/go:
+	@go mod vendor
+	@PORT=8088 DRIVER=mysql DSN='root:root@tcp(127.0.0.1:3306)/gorl_db' MYSQL_ROOT_PASSWORD=root MYSQL_DATABASE=gorl_db TZ='Asia/Tokyo' go test -cover $(shell go list ./... |grep -v 'vendor') -p 1
 
 push:
 	@go fmt ./...

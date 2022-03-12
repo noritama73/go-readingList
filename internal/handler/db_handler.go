@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"os"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/noritama73/go-readinglist/internal/model"
 )
 
@@ -15,24 +16,10 @@ type SQLService struct {
 
 func NewSQLService() *SQLService {
 	log.SetFlags(log.Lshortfile)
-	db, e := sql.Open("sqlite3", "./sql/item.db")
+	db, e := sql.Open(os.Getenv("DRIVER"), os.Getenv("DSN"))
 	if e != nil {
 		log.Fatalln(e)
 	}
-	create_sql, e := db.Prepare(`CREATE TABLE IF NOT EXISTS item (
-		id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-		title TEXT NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
-		updated_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
-		url TEXT,
-		memo TEXT,
-		tag TEXT
-	)`)
-	if e != nil {
-		log.Fatalln(e)
-	}
-	defer create_sql.Close()
-	create_sql.Exec()
 
 	return &SQLService{
 		db: db,
@@ -47,7 +34,7 @@ func (s *SQLService) GetItem(id model.ID) (result model.Item, e error) {
 	db := s.db
 
 	det := result.Detail
-	get_sql := db.QueryRow(`SELECT title, updated_at, memo, url, tag FROM item WHERE id = $1`, id)
+	get_sql := db.QueryRow(`SELECT title, updated_at, memo, url, tag FROM item WHERE id = ?`, id)
 	e = get_sql.Scan(&det.Title, &det.Updated_at, &det.Memo, &det.URL, &det.Tag)
 	if e != nil {
 		log.Println(e)
@@ -96,7 +83,7 @@ func (s *SQLService) PutItemData(data []byte) error {
 		title, url, memo, tag
 	)
 	VALUES (
-		$1, $2, $3, $4
+		?, ?, ?, ?
 	)`)
 	if e != nil {
 		log.Println(e)
@@ -112,7 +99,7 @@ func (s *SQLService) UpdateItemData(id model.ID, data []byte) error {
 	db := s.db
 
 	var idCheck model.ID
-	exist_sql := db.QueryRow(`SELECT id FROM item WHERE id = $1`, id)
+	exist_sql := db.QueryRow(`SELECT id FROM item WHERE id = ?`, id)
 	e := exist_sql.Scan(&idCheck)
 	if e != nil {
 		log.Println(e)
@@ -129,11 +116,11 @@ func (s *SQLService) UpdateItemData(id model.ID, data []byte) error {
 	}
 
 	update_sql, e := db.Prepare(`UPDATE item SET
-		title = $1,
-		url = $2,
-		memo = $3,
-		tag = $4
-		WHERE id = $5
+		title = ?,
+		url = ?,
+		memo = ?,
+		tag = ?
+		WHERE id = ?
 	`)
 	if e != nil {
 		log.Println(e)
@@ -148,7 +135,7 @@ func (s *SQLService) UpdateItemData(id model.ID, data []byte) error {
 func (s *SQLService) DeleteItemData(id model.ID) error {
 	db := s.db
 
-	delete_sql, e := db.Prepare(`DELETE FROM item WHERE id = $1`)
+	delete_sql, e := db.Prepare(`DELETE FROM item WHERE id = ?`)
 	if e != nil {
 		log.Println(e)
 		return e
@@ -179,11 +166,11 @@ func (s *FakeSQLService) DeleteAll() {
 	defer drop_sql.Close()
 	drop_sql.Exec()
 
-	create_sql, e := db.Prepare(`CREATE TABLE IF NOT EXISTS item (
-		id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	create_sql, e := db.Prepare(`CREATE TABLE item (
+		id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
 		title TEXT NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
-		updated_at TIMESTAMP NOT NULL DEFAULT (DATETIME('now','localtime')),
+		created_at DATETIME DEFAULT current_timestamp,
+		updated_at DATETIME DEFAULT current_timestamp ON UPDATE current_timestamp,
 		url TEXT,
 		memo TEXT,
 		tag TEXT

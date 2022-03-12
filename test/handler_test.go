@@ -94,8 +94,9 @@ func Test_ItemHandler(t *testing.T) {
 	})
 
 	t.Run("レコード更新#存在しないIDの更新", func(t *testing.T) {
-		_, c := testUpdateItem(testEcho, testUpdateItemRequest(), model.ID(9))
-		require.Equal(t, ErrSQLNoResult, hdl.UpdateItemData(c))
+		rec, c := testUpdateItem(testEcho, testUpdateItemRequest(), model.ID(9))
+		assert.Equal(t, ErrSQLNoResult, hdl.UpdateItemData(c))
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	})
 }
 
