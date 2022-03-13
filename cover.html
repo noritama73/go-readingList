@@ -57,7 +57,7 @@
 				
 				<option value="file0">github.com/noritama73/go-readinglist/app/main.go (0.0%)</option>
 				
-				<option value="file1">github.com/noritama73/go-readinglist/internal/handler/db_handler.go (72.3%)</option>
+				<option value="file1">github.com/noritama73/go-readinglist/internal/handler/db_handler.go (68.8%)</option>
 				
 				<option value="file2">github.com/noritama73/go-readinglist/internal/handler/handler.go (43.3%)</option>
 				
@@ -131,14 +131,14 @@ type SQLService struct {
         db *sql.DB
 }
 
-func NewSQLService() *SQLService <span class="cov8" title="1">{
+func NewSQLService() *SQLService <span class="cov0" title="0">{
         log.SetFlags(log.Lshortfile)
         db, e := sql.Open(os.Getenv("DRIVER"), os.Getenv("DSN"))
         if e != nil </span><span class="cov0" title="0">{
                 log.Fatalln(e)
         }</span>
 
-        <span class="cov8" title="1">return &amp;SQLService{
+        <span class="cov0" title="0">return &amp;SQLService{
                 db: db,
         }</span>
 }
@@ -190,7 +190,7 @@ func (s *SQLService) PutItemData(data []byte) error <span class="cov8" title="1"
         var DetailData model.PutDetailData
         if e := json.Unmarshal(data, &amp;DetailData); e != nil </span><span class="cov0" title="0">{
                 if err, ok := e.(*json.SyntaxError); ok </span><span class="cov0" title="0">{
-                        log.Println(string(data[err.Offset-1 : err.Offset+1]))
+                        log.Println(string(data[err.Offset-3 : err.Offset+3]))
                 }</span>
                 <span class="cov0" title="0">log.Println(e)
                 return e</span>
@@ -226,7 +226,7 @@ func (s *SQLService) UpdateItemData(id model.ID, data []byte) error <span class=
         <span class="cov8" title="1">var DetailData model.PutDetailData
         if e := json.Unmarshal(data, &amp;DetailData); e != nil </span><span class="cov0" title="0">{
                 if err, ok := e.(*json.SyntaxError); ok </span><span class="cov0" title="0">{
-                        log.Println(string(data[err.Offset-7 : err.Offset+7]))
+                        log.Println(string(data[err.Offset-3 : err.Offset+3]))
                 }</span>
                 <span class="cov0" title="0">log.Println(e)
                 return e</span>
@@ -268,10 +268,34 @@ type FakeSQLService struct {
 }
 
 func NewFakeSQLService() *FakeSQLService <span class="cov8" title="1">{
+        log.SetFlags(log.Lshortfile)
+        db, e := sql.Open(os.Getenv("DRIVER"), os.Getenv("DSN"))
+        log.Println(os.Getenv("DSN"))
+        if e != nil </span><span class="cov0" title="0">{
+                log.Fatalln(e)
+        }</span>
+
+        <span class="cov8" title="1">create_sql, e := db.Prepare(`CREATE TABLE item (
+                id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+                title TEXT NOT NULL,
+                created_at DATETIME DEFAULT current_timestamp,
+                updated_at DATETIME DEFAULT current_timestamp ON UPDATE current_timestamp,
+                url TEXT,
+                memo TEXT,
+                tag TEXT
+        )`)
+        if e != nil </span><span class="cov0" title="0">{
+                log.Fatalln(e)
+        }</span>
+        <span class="cov8" title="1">defer create_sql.Close()
+        create_sql.Exec()
+
         return &amp;FakeSQLService{
-                SQLService: NewSQLService(),
-        }
-}</span>
+                &amp;SQLService{
+                        db: db,
+                },
+        }</span>
+}
 
 func (s *FakeSQLService) DeleteAll() <span class="cov8" title="1">{
         db := s.db

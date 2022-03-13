@@ -73,7 +73,7 @@ func (s *SQLService) PutItemData(data []byte) error {
 	var DetailData model.PutDetailData
 	if e := json.Unmarshal(data, &DetailData); e != nil {
 		if err, ok := e.(*json.SyntaxError); ok {
-			log.Println(string(data[err.Offset-1 : err.Offset+1]))
+			log.Println(string(data[err.Offset-3 : err.Offset+3]))
 		}
 		log.Println(e)
 		return e
@@ -109,7 +109,7 @@ func (s *SQLService) UpdateItemData(id model.ID, data []byte) error {
 	var DetailData model.PutDetailData
 	if e := json.Unmarshal(data, &DetailData); e != nil {
 		if err, ok := e.(*json.SyntaxError); ok {
-			log.Println(string(data[err.Offset-7 : err.Offset+7]))
+			log.Println(string(data[err.Offset-3 : err.Offset+3]))
 		}
 		log.Println(e)
 		return e
@@ -151,8 +151,32 @@ type FakeSQLService struct {
 }
 
 func NewFakeSQLService() *FakeSQLService {
+	log.SetFlags(log.Lshortfile)
+	db, e := sql.Open(os.Getenv("DRIVER"), os.Getenv("DSN"))
+	log.Println(os.Getenv("DSN"))
+	if e != nil {
+		log.Fatalln(e)
+	}
+
+	create_sql, e := db.Prepare(`CREATE TABLE item (
+		id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+		title TEXT NOT NULL,
+		created_at DATETIME DEFAULT current_timestamp,
+		updated_at DATETIME DEFAULT current_timestamp ON UPDATE current_timestamp,
+		url TEXT,
+		memo TEXT,
+		tag TEXT
+	)`)
+	if e != nil {
+		log.Fatalln(e)
+	}
+	defer create_sql.Close()
+	create_sql.Exec()
+
 	return &FakeSQLService{
-		SQLService: NewSQLService(),
+		&SQLService{
+			db: db,
+		},
 	}
 }
 

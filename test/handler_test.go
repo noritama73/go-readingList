@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -96,7 +95,6 @@ func Test_ItemHandler(t *testing.T) {
 
 	t.Run("レコード更新#存在しないIDの更新", func(t *testing.T) {
 		rec, c := testUpdateItem(testEcho, testUpdateItemRequest(), model.ID(2))
-		log.Println("koko")
 		assert.NoError(t, hdl.UpdateItemData(c))
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	})

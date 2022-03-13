@@ -16,11 +16,11 @@ compose/down:
 	@docker-compose down
 
 exec:
-	@docker exec -it go-readinglist-go-1 /bin/sh
+	@docker exec -it gorl-backend /bin/sh
 
-test/go:
+ci-test:
 	@go mod vendor
-	@PORT=8088 DRIVER=mysql DSN='root:root@tcp(127.0.0.1:3306)/gorl_db' MYSQL_ROOT_PASSWORD=root MYSQL_DATABASE=gorl_db TZ='Asia/Tokyo' go test ./... -coverpkg=./... $(shell go list ./... | grep -v 'vendor') -p 1
+	@PORT=8088 DRIVER=mysql DSN='root:root_test@tcp(127.0.0.1:3307)/gorl_db_test' MYSQL_ROOT_PASSWORD=root_test MYSQL_DATABASE=gorl_db_test TZ='Asia/Tokyo' go test ./... -coverpkg=./... $(shell go list ./... | grep -v 'vendor') -p 1
 
 push:
 	@go fmt ./...
@@ -34,7 +34,7 @@ serve:
 
 cover:
 	@go mod vendor
-	@PORT=8088 DRIVER=mysql DSN='root:root@tcp(127.0.0.1:3306)/gorl_db' MYSQL_ROOT_PASSWORD=root MYSQL_DATABASE=gorl_db TZ='Asia/Tokyo' go test ./... -coverpkg=./... -coverprofile=cover.out.tmp $(shell go list ./... | grep -v 'vendor') -p 1
+	@PORT=8088 DRIVER=mysql DSN='root:root_test@tcp(127.0.0.1:3307)/gorl_db_test' MYSQL_ROOT_PASSWORD=root_test MYSQL_DATABASE=gorl_db_test TZ='Asia/Tokyo' go test ./... -coverpkg=./... -coverprofile=cover.out.tmp $(shell go list ./... | grep -v 'vendor') -p 1
 	@cat cover.out.tmp | grep -v "**_mock.go" | grep -v "wire_gen.go" > cover.out
 	@rm cover.out.tmp
 	@go tool cover -html=cover.out -o cover.html

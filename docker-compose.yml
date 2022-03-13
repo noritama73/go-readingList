@@ -1,35 +1,49 @@
 version: "3"
 services:
-    go:
-      build: .
-      tty: true
-      env_file: ./.env
-      environment:
-        - PORT
-        - DRIVER
-        - DSN
-      ports:
-        - ${PORT}:${PORT}
-    vue:
-      build: 
-        context: .
-        dockerfile: ./frontend/Dockerfile
-      tty: true
-      ports:
-        - "8089:80"
-    db:
-      image: mariadb
-      container_name: db
-      environment:
-        - MYSQL_ROOT_PASSWORD
-        - MYSQL_DATABASE
-        - TZ
-      command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-      volumes:
-        - ./mysql/initdb.d:/docker-entrypoint-initdb.d
-        - gorl-db:/var/lib/mysql
-      ports:
-        - 3306:3306
+  go:
+    build: .
+    container_name: gorl-backend
+    tty: true
+    env_file: ./.env
+    environment:
+      - PORT
+      - DRIVER
+      - DSN
+    ports:
+      - ${PORT}:${PORT}
+  vue:
+    build: 
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: gorl-frontend
+    tty: true
+    ports:
+      - "8089:80"
+  db:
+    image: mariadb
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gorl_db
+      TZ: 'Azia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+      - gorl-db:/var/lib/mysql
+    ports:
+      - 3306:3306
+  db_test:
+    image: mariadb
+    container_name: db_test
+    environment:
+      MYSQL_ROOT_PASSWORD: root_test
+      MYSQL_DATABASE: gorl_db_test
+      TZ: 'Azia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 3307:3306
 
 volumes:
   gorl-db:
