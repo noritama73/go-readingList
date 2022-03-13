@@ -8,7 +8,7 @@ type ItemRepository interface {
 	DeleteItemData(id ID) error
 }
 
-type ID int64
+type ID string
 
 type Item struct {
 	ID     ID

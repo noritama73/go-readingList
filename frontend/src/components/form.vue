@@ -49,9 +49,9 @@ export default {
   data() {
     return {
       tags: [
-        { text: "読了", value: "finish" },
-        { text: "後で読む", value: "later" },
-        { text: "読みかけ", value: "ontheway" },
+        { text: "読了", value: "読了" },
+        { text: "後で読む", value: "後で読む" },
+        { text: "読みかけ", value: "読みかけ" },
       ],
       submits: {
         title: "",

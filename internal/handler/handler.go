@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -23,9 +24,11 @@ func (h *ItemHandler) GetItem(c echo.Context) error {
 	if e := c.Bind(&param); e != nil {
 		return apiResponseErr(c, http.StatusBadRequest, clientErrMsg)
 	}
+	log.Println(param.ID)
 
 	item, e := h.itemRepository.GetItem(param.ID)
 	if e != nil {
+		log.Println(e)
 		return apiResponseErr(c, http.StatusInternalServerError, serverErrMsg)
 	}
 
