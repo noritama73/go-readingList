@@ -35,7 +35,7 @@ func (s *SQLService) GetItem(id model.ID) (result model.Item, e error) {
 	db := s.db
 
 	det := result.Detail
-	log.Println(id)
+
 	get_sql := db.QueryRow(`SELECT title, updated_at, memo, url, tag FROM item WHERE id = ?`, id)
 	e = get_sql.Scan(&det.Title, &det.Updated_at, &det.Memo, &det.URL, &det.Tag)
 	if e != nil {

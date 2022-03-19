@@ -26,6 +26,7 @@ func main() {
 	})
 
 	sqldb := handler.NewSQLService()
+	defer sqldb.DestructDB()
 	cxthandler := handler.NewItemHandler(sqldb)
 	e.GET("/itemList", cxthandler.ListItems)
 	e.GET("/item", cxthandler.GetItem)
@@ -34,5 +35,4 @@ func main() {
 	e.DELETE("/item", cxthandler.DeleteItemData)
 
 	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
-	defer sqldb.DestructDB()
 }

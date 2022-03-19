@@ -19,14 +19,13 @@ func NewItemHandler(sqlService *SQLService) *ItemHandler {
 }
 
 func (h *ItemHandler) GetItem(c echo.Context) error {
-	var param model.GetItem
+	id := c.QueryParam("id")
 
-	if e := c.Bind(&param); e != nil {
+	if id == "" {
 		return apiResponseErr(c, http.StatusBadRequest, clientErrMsg)
 	}
-	log.Println(param.ID)
 
-	item, e := h.itemRepository.GetItem(param.ID)
+	item, e := h.itemRepository.GetItem(model.ID(id))
 	if e != nil {
 		log.Println(e)
 		return apiResponseErr(c, http.StatusInternalServerError, serverErrMsg)
@@ -66,17 +65,17 @@ func (h *ItemHandler) UpdateItemData(c echo.Context) error {
 	if e := h.itemRepository.UpdateItemData(param.ID, []byte(param.Data)); e != nil {
 		return apiResponseErr(c, http.StatusInternalServerError, serverErrMsg)
 	}
-	return apiResponseOK(c, "Successfully update3 data!")
+	return apiResponseOK(c, "Successfully update data!")
 }
 
 func (h *ItemHandler) DeleteItemData(c echo.Context) error {
-	var param model.DeleteItem
+	id := c.QueryParam("id")
 
-	if e := c.Bind(&param); e != nil {
+	if id == "" {
 		return apiResponseErr(c, http.StatusBadRequest, clientErrMsg)
 	}
 
-	if e := h.itemRepository.DeleteItemData(param.ID); e != nil {
+	if e := h.itemRepository.DeleteItemData(model.ID(id)); e != nil {
 		return apiResponseErr(c, http.StatusInternalServerError, serverErrMsg)
 	}
 

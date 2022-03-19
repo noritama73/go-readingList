@@ -1,6 +1,13 @@
 <template>
   <div>
     <v-card>
+      <v-snackbar v-model="submitSnackbar" vertical top>
+        {{ submitMessage }}
+        <v-btn dark text color="indigo" @click="submitSnackbar = false">
+          Close
+        </v-btn>
+      </v-snackbar>
+
       <v-card-text>
         <v-row>
           <v-col>
@@ -59,6 +66,9 @@ export default {
         url: "",
         tag: "",
       },
+
+      submitSnackbar: false,
+      submitMessage: "",
     };
   },
   methods: {
@@ -70,6 +80,19 @@ export default {
         tag: this.submits.tag,
       };
       return submitData;
+    },
+    openSnackbarMessage(message) {
+      this.submitSnackbar = true;
+      this.submitMessage = message;
+    },
+    openSnackbarError(error) {
+      this.submitSnackbar = true;
+      this.submitMessage =
+        error.response.status +
+        "(" +
+        error.response.data.code +
+        ")" +
+        error.response.data.errors;
     },
   },
 };

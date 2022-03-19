@@ -26,14 +26,13 @@ export default {
       let param = new URLSearchParams();
       let data = this.$refs.child.childPostItem();
       param.append("data", JSON.stringify(data));
-      console.log(JSON.stringify(data));
       axios
         .post(process.env.VUE_APP_ENDPOINT + "/item", param)
         .then((res) => {
-          console.log(res.data);
+          this.$refs.child.openSnackbarMessage(res.data);
         })
         .catch((err) => {
-          console.log(err.response);
+          this.$refs.child.openSnackbarError(err);
         });
     },
   },
