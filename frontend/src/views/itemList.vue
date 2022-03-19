@@ -16,7 +16,7 @@
         </router-link>
       </template>
       <template v-slot:[`item.delete`]="{ item }">
-        <v-btn @click="deleteItemCheck(item.ID)">削除</v-btn>
+        <v-icon @click="deleteItemCheck(item.ID)"> mdi-delete </v-icon>
       </template>
     </v-data-table>
   </v-card>

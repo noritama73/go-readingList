@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   props: {
     title: {
@@ -72,7 +73,20 @@ export default {
     };
   },
   methods: {
-    childPostItem() {
+    childGetItem(id) {
+      axios
+        .get(process.env.VUE_APP_ENDPOINT + `/item?id=${id}`)
+        .then((res) => {
+          this.submits.title = res.data.Detail.Title;
+          this.submits.memo = res.data.Detail.Memo;
+          this.submits.url = res.data.Detail.URL;
+          this.submits.tag = res.data.Detail.Tag;
+        })
+        .catch((err) => {
+          this.openSnackbarError(err);
+        });
+    },
+    childSendItem() {
       const submitData = {
         title: this.submits.title,
         memo: this.submits.memo,

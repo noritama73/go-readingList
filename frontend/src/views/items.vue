@@ -9,6 +9,16 @@
       </v-snackbar>
 
       <v-card-text>
+        <v-row justify="end">
+          <v-col>
+            <v-subheader>編集</v-subheader>
+          </v-col>
+          <v-col class="d-flex align-center">
+            <router-link :to="{ path: 'item/edit', query: { id: this.ID } }">
+              <v-icon> mdi-account-edit </v-icon>
+            </router-link>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col>
             <v-subheader>タイトル</v-subheader>
@@ -49,7 +59,13 @@ import axios from "axios";
 export default {
   data() {
     return {
-      item: null,
+      ID: "",
+      item: {
+        Title: "",
+        Memo: "",
+        URL: "",
+        Tag: "",
+      },
 
       submitSnackbar: false,
       submitMessage: "",
@@ -60,9 +76,8 @@ export default {
       axios
         .get(process.env.VUE_APP_ENDPOINT + `/item?id=${this.$route.query.id}`)
         .then((res) => {
+          this.ID = res.data.ID;
           this.item = res.data.Detail;
-          this.openSnackbarMessage(res);
-          console.log(res);
         })
         .catch((err) => {
           this.openSnackbarError(err);

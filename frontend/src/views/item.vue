@@ -24,7 +24,7 @@ export default {
   methods: {
     postItem() {
       let param = new URLSearchParams();
-      let data = this.$refs.child.childPostItem();
+      let data = this.$refs.child.childSendItem();
       param.append("data", JSON.stringify(data));
       axios
         .post(process.env.VUE_APP_ENDPOINT + "/item", param)
