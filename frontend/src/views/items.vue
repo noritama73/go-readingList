@@ -7,18 +7,19 @@
           Close
         </v-btn>
       </v-snackbar>
-
-      <v-card-text>
-        <v-row justify="end">
-          <v-col>
-            <v-subheader>編集</v-subheader>
-          </v-col>
-          <v-col class="d-flex align-center">
-            <router-link :to="{ path: 'item/edit', query: { id: this.ID } }">
+      <v-row>
+        <v-col cols="3">
+          <v-card-title>レコード詳細</v-card-title>
+        </v-col>
+        <v-col class="d-flex align-center">
+          <router-link :to="{ path: 'item/edit', query: { id: this.ID } }">
+            <v-btn>
               <v-icon> mdi-account-edit </v-icon>
-            </router-link>
-          </v-col>
-        </v-row>
+            </v-btn>
+          </router-link>
+        </v-col>
+      </v-row>
+      <v-card-text>
         <v-row>
           <v-col>
             <v-subheader>タイトル</v-subheader>
@@ -41,7 +42,7 @@
       <v-row justify="center">
         <v-col cols="9" class="mb-2">
           <v-subheader>関連リンク</v-subheader>
-          <v-btn :href="item.URL" color="link">
+          <v-btn :href="item.URL" color="link" class="text-none">
             <span>{{ item.URL }}</span>
           </v-btn>
         </v-col>
